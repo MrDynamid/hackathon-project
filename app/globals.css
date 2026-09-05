@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  /* Fonts */
+  --font-sans: var(--font-manrope), 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: var(--font-caslon), 'Libre Caslon Text', Georgia, serif;
+  --font-headline: var(--font-caslon), 'Libre Caslon Text', Georgia, serif;
+  --font-body: var(--font-manrope), 'Manrope', sans-serif;
+
+  /* Ethereal Clarity palette */
+  --color-background: #fbf9f8;
+  --color-on-background: #1b1c1c;
+  --color-foreground: #1b1c1c;
+  --color-surface: #fbf9f8;
+  --color-surface-dim: #dbd9d9;
+  --color-surface-bright: #fbf9f8;
+  --color-surface-variant: #e4e2e2;
+  --color-surface-tint: #000000;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f3f3;
+  --color-surface-container: #efeded;
+  --color-surface-container-high: #eae8e7;
+  --color-surface-container-highest: #e4e2e2;
+  --color-on-surface: #1b1c1c;
+  --color-on-surface-variant: #4c4546;
+  --color-inverse-surface: #303030;
+  --color-inverse-on-surface: #f2f0f0;
+
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-primary-foreground: #ffffff;
+  --color-primary-container: #1b1b1b;
+  --color-on-primary-container: #848484;
+  --color-primary-fixed: #e2e2e2;
+  --color-primary-fixed-dim: #c6c6c6;
+  --color-on-primary-fixed: #1b1b1b;
+  --color-on-primary-fixed-variant: #474747;
+
+  --color-secondary: #64597a;
+  --color-on-secondary: #ffffff;
+  --color-secondary-foreground: #ffffff;
+  --color-secondary-container: #e2d4fb;
+  --color-on-secondary-container: #645a7b;
+  --color-secondary-fixed: #eaddff;
+  --color-secondary-fixed-dim: #cec0e6;
+  --color-on-secondary-fixed: #1f1633;
+  --color-on-secondary-fixed-variant: #4b4261;
+
+  --color-outline: #7e7576;
+  --color-outline-variant: #cfc4c5;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* Radius */
+  --radius: 0.25rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-gutter: 24px;
+  --spacing-margin-mobile: 20px;
+  --spacing-margin-desktop: 64px;
+  --spacing-stack-unit: 8px;
+
+  /* Shadows */
+  --shadow-editorial: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lavender: 0 0 0 2px #e2d4fb;
+}
+
+:root {
+  color-scheme: light;
+  --bg-parchment: #fbf9f8;
+  --ink-primary: #000000;
+  --bloom-lavender: #e2d4fb;
+  --bloom-lavender-fixed: #eaddff;
+}
+
+body {
+  background-color: #fbf9f8;
+  color: #1b1c1c;
+  font-family: var(--font-manrope), 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+.font-serif,
+.editorial-heading {
+  font-family: var(--font-caslon), 'Libre Caslon Text', Georgia, serif;
+}
+
+/* Custom Minimal Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cfc4c5;
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #7e7576;
+}
+
+/* Material Symbols sizing helper */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Print Styles for Resume Export */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-resume,
+  #printable-resume * {
+    visibility: visible;
+  }
+  #printable-resume {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20mm;
+    box-shadow: none;
+    border: none;
+  }
+  nav,
+  header,
+  footer,
+  button,
+  .no-print {
+    display: none !important;
+  }
+}
