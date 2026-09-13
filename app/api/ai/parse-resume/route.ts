@@ -115,8 +115,7 @@ export async function POST(req: Request) {
 
   try {
     const { object } = await generateGeminiObject({
-      model: PREP_MODEL,
-      schema: analysisSchema,
+        schema: analysisSchema,
       system,
       messages,
       providerOptions: FAST_THINKING,

@@ -28,7 +28,6 @@ export async function POST(req: Request) {
 
   try {
     const { object } = await generateGeminiObject({
-      model: PREP_MODEL,
       schema: rewritesSchema,
       system:
         'You are an expert resume editor. Rewrite the candidate\'s experience bullets to be more impactful and ' +

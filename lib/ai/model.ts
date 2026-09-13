@@ -16,27 +16,27 @@ export class GeminiGenerationError extends Error {
   }
 }
 
-// PrepPilot uses Google Gemini for every AI call. GEMINI_API_KEY is the
-// project credential name provisioned for this app.
-export const google = createGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
-})
+// PrepPilot uses Google Gemini for every AI call. Rotate through the three
+// project keys so one exhausted free-tier key does not take down the session.
+const geminiKeys = [
+  process.env.GEMINI_API_KEY,
+  process.env.GEMINI_API_KEY_2,
+  process.env.GEMINI_API_KEY_3,
+].filter((key): key is string => Boolean(key?.trim()))
 
-// Fast, capable multimodal model. Handles text + native PDF understanding.
-// We pair it with FAST_THINKING (below) to cap extended reasoning, which keeps
-// structured-output latency low instead of the 60s+ that flash models spend on
-// deep reasoning by default.
-export const PREP_MODEL = google('gemini-2.5-flash')
+const googleClients = geminiKeys.map((apiKey) => createGoogleGenerativeAI({ apiKey }))
+export const google = googleClients[0] ?? createGoogleGenerativeAI({ apiKey: '' })
 
-// Gemini-only fallback chain. These are separate model IDs so a temporary
-// model-specific failure can recover without switching providers.
-export const PREP_MODEL_FALLBACK = google('gemini-2.5-pro')
-export const PREP_MODEL_LEGACY_FALLBACK = google('gemini-2.0-flash')
-export const PREP_TEXT_MODELS: LanguageModel[] = [
-  PREP_MODEL,
-  PREP_MODEL_FALLBACK,
-  PREP_MODEL_LEGACY_FALLBACK,
-]
+// Each key gets the same Gemini model chain. A model failure and a quota failure
+// both advance to the next available key/model pair.
+const geminiModelNames = ['gemini-3.6-flash']
+export const PREP_TEXT_MODELS: LanguageModel[] = googleClients.flatMap((client) =>
+  geminiModelNames.map((modelName) => client(modelName)),
+)
+
+export const PREP_MODEL = PREP_TEXT_MODELS[0] ?? google('gemini-2.5-flash')
+export const PREP_MODEL_FALLBACK = PREP_TEXT_MODELS[1] ?? google('gemini-2.5-pro')
+export const PREP_MODEL_LEGACY_FALLBACK = PREP_TEXT_MODELS[2] ?? google('gemini-2.0-flash')
 
 export async function withGeminiFallback<T>(run: (model: LanguageModel) => Promise<T>): Promise<T> {
   let lastError: unknown
@@ -46,7 +46,15 @@ export async function withGeminiFallback<T>(run: (model: LanguageModel) => Promi
     } catch (error) {
       lastError = error
       const message = error instanceof Error ? error.message.toLowerCase() : ''
-      if (!message.includes('quota') && !message.includes('rate') && !message.includes('429')) break
+      const shouldTryNextCredential =
+        message.includes('quota') ||
+        message.includes('rate') ||
+        message.includes('429') ||
+        message.includes('401') ||
+        message.includes('403') ||
+        message.includes('api key') ||
+        message.includes('resource exhausted')
+      if (!shouldTryNextCredential) break
     }
   }
   throw lastError instanceof Error ? lastError : new GeminiGenerationError('Gemini generation failed')

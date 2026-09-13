@@ -52,6 +52,7 @@ export default function VoiceVisualizer({
   const wantRecordingRef = useRef(false);
   const startingRef = useRef(false);
   const generationRef = useRef(0);
+  const finalResultIndexRef = useRef(0);
   const onTranscriptRef = useRef(onTranscript);
   const onInterimTranscriptRef = useRef(onInterimTranscript);
 
@@ -73,6 +74,7 @@ export default function VoiceVisualizer({
   const stopEverything = useCallback(() => {
     wantRecordingRef.current = false;
     generationRef.current += 1;
+    finalResultIndexRef.current = 0;
     startingRef.current = false;
     try {
       recognitionRef.current?.stop();
@@ -156,18 +158,25 @@ export default function VoiceVisualizer({
 
     recognition.onresult = (e) => {
       let interimText = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
+      let nextFinalIndex = finalResultIndexRef.current;
+      // Read the complete result list. Some Chromium builds report a stale
+      // resultIndex after an automatic restart, which previously dropped text.
+      for (let i = 0; i < e.results.length; i++) {
         const res = e.results[i];
-        const text = res[0].transcript;
+        const text = res[0].transcript.trim();
         if (res.isFinal) {
-          onTranscriptRef.current?.(text.trim());
-          setInterim("");
-        } else {
-          interimText += text;
+          if (i >= finalResultIndexRef.current && text) {
+            onTranscriptRef.current?.(text);
+          }
+          nextFinalIndex = Math.max(nextFinalIndex, i + 1);
+        } else if (i >= e.resultIndex) {
+          interimText += `${text} `;
         }
       }
-      setInterim(interimText);
-      onInterimTranscriptRef.current?.(interimText.trim());
+      finalResultIndexRef.current = nextFinalIndex;
+      const liveText = interimText.trim();
+      setInterim(liveText);
+      onInterimTranscriptRef.current?.(liveText);
     };
 
     recognition.onerror = (ev) => {
