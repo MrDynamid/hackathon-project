@@ -24,7 +24,6 @@ export async function POST(req: Request) {
 
   try {
     const { object } = await generateGeminiObject({
-      model: PREP_MODEL,
       schema: questionsSchema,
       system:
         'You are a senior technical interviewer. Generate exactly 5 mock interview questions grounded in the ' +

@@ -31,7 +31,6 @@ export async function POST(req: Request) {
 
   try {
     const { object } = await generateGeminiObject({
-      model: PREP_MODEL,
       schema: feedbackSchema,
       system:
         'You are a rigorous but fair interview evaluator. Grade the candidate on a 0-100 scale across exactly four ' +
